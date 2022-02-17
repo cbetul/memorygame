@@ -8,6 +8,7 @@
 // Model -> UI Independent component (data, logic)
 // ViewModel -> Binds View to Model (like a interpreter)
 // View -> Reflects the model, Stateless & Reactive
+// View
 
 import SwiftUI
 
@@ -66,12 +67,12 @@ struct ContentView: View { // behaves as "view"
 struct CardView: View {
     var textContent: String
     
-    @State var faceuP: Bool = true // view still immutable,  acts like a pointer
+    @State var faceUp: Bool = true // view still immutable,  acts like a pointer
     
     var body: some View {
         ZStack {
             let shape = RoundedRectangle(cornerRadius: 20)
-            if faceuP {
+            if faceUp {
                 shape.fill().foregroundColor(.white)
                 shape.strokeBorder(lineWidth: 3)
                 Text(textContent).font(.largeTitle )
@@ -81,7 +82,7 @@ struct CardView: View {
             }
         }
         .onTapGesture {
-            faceuP = !faceuP
+            faceUp = !faceUp
         }
     }
 }
