@@ -8,9 +8,11 @@
 
 import Foundation
 
-struct MemoryGame<CardContent>{ // card content "more flexible"
+// Equatable -> dont care type is equatable
+struct MemoryGame<CardContent> where CardContent: Equatable { // card content "more flexible"
     
     private(set) var cards: Array<Card> //private(set), others only reach the variables, cannot change it
+    private var indexOneFaceupCard: Int?
     
     // init function
     init(numOfPairsOfCards: Int, createCardContent: (Int) -> CardContent) { //adds  x2 cards to the array
@@ -24,24 +26,30 @@ struct MemoryGame<CardContent>{ // card content "more flexible"
     }
     
     mutating func choose(_ card: Card) {
-        let chosenIndex = index(of: card)
-        cards[chosenIndex].faceUp.toggle()
-        print("\(cards)")
+        // if the card id is in index
+        if let chosenIndex = cards.firstIndex(where: { $0.id == card.id}), !cards[chosenIndex].faceUp,
+            !cards[chosenIndex].isMatched {
+            if let potentialMatchIndex = indexOneFaceupCard{
+                if cards[chosenIndex].textContent == cards[potentialMatchIndex].textContent{
+                    cards[chosenIndex].isMatched = true
+                    cards[potentialMatchIndex].isMatched = true
+                }
+                indexOneFaceupCard = nil
+            } else {
+                for index in cards.indices { // turns face up all cards
+                    cards[index].faceUp = false
+                }
+                indexOneFaceupCard = chosenIndex
+            }
+            cards[chosenIndex].faceUp.toggle()
+        }
     }
     
-    func index (of card: Card) -> Int{
-        for index in 0..<cards.count{
-            if cards[index].id == card.id {
-                return index
-            }
-        }
-        return 0 
-    }
     
     //Identifiable -> simple attribute that makes every struct unique
     struct Card: Identifiable {  //card structure (variables, attributes) -> MemoryGame.Card
         var textContent: CardContent //don't care variable
-        var faceUp: Bool = true
+        var faceUp: Bool = false
         var isMatched: Bool = false
         var id: Int
     }
